@@ -20,8 +20,14 @@ import {
   Package,
   LogOut,
   User,
-  Store
+  Store,
+  Menu,
+  X
 } from "lucide-react";
+
+import {
+  useState
+} from "react";
 
 
 export default function Navbar() {
@@ -37,6 +43,9 @@ export default function Navbar() {
 
   const navigate = useNavigate();
 
+  const [mobileMenu, setMobileMenu] =
+    useState(false);
+
 
   const handleLogout = () => {
 
@@ -47,6 +56,8 @@ export default function Navbar() {
     );
 
     navigate("/login");
+
+    setMobileMenu(false);
   };
 
 
@@ -64,15 +75,11 @@ export default function Navbar() {
 
         backdrop-blur-xl
 
-        bg-black/70
+        bg-black/80
 
         border-b
 
         border-white/10
-
-        px-6
-
-        py-4
       "
     >
 
@@ -83,6 +90,10 @@ export default function Navbar() {
           max-w-7xl
 
           mx-auto
+
+          px-4
+
+          py-4
 
           flex
 
@@ -107,7 +118,9 @@ export default function Navbar() {
 
             className="
 
-              text-2xl
+              text-xl
+
+              md:text-2xl
 
               font-bold
 
@@ -120,12 +133,14 @@ export default function Navbar() {
         </Link>
 
 
-        {/* LINKS */}
+        {/* DESKTOP MENU */}
         <div
 
           className="
 
-            flex
+            hidden
+
+            md:flex
 
             items-center
 
@@ -197,9 +212,7 @@ export default function Navbar() {
 
                   className="
 
-                    hidden
-
-                    md:flex
+                    flex
 
                     items-center
 
@@ -218,7 +231,7 @@ export default function Navbar() {
                 </div>
 
 
-                {/* VENDOR */}
+                {/* VENDOR DASHBOARD */}
                 {
                   user?.is_vendor && (
 
@@ -246,77 +259,81 @@ export default function Navbar() {
                         size={18}
                       />
 
-                      <span>
-                        Vendor
-                      </span>
+                      Vendor
 
                     </Link>
                   )
                 }
 
 
-                {/* CART */}
-                <Link
+                {/* SHOW ONLY FOR NORMAL USERS */}
+                {
+                  !user?.is_vendor && (
 
-                  to="/cart"
+                    <>
 
-                  className="
+                      {/* CART */}
+                      <Link
 
-                    flex
+                        to="/cart"
 
-                    items-center
+                        className="
 
-                    gap-2
+                          flex
 
-                    text-gray-300
+                          items-center
 
-                    hover:text-white
+                          gap-2
 
-                    transition
-                  "
-                >
+                          text-gray-300
 
-                  <ShoppingCart
-                    size={18}
-                  />
+                          hover:text-white
 
-                  <span>
-                    Cart
-                  </span>
+                          transition
+                        "
+                      >
 
-                </Link>
+                        <ShoppingCart
+                          size={18}
+                        />
+
+                        Cart
+
+                      </Link>
 
 
-                {/* ORDERS */}
-                <Link
+                      {/* ORDERS */}
+                      <Link
 
-                  to="/orders"
+                        to="/orders"
 
-                  className="
+                        className="
 
-                    flex
+                          flex
 
-                    items-center
+                          items-center
 
-                    gap-2
+                          gap-2
 
-                    text-gray-300
+                          text-gray-300
 
-                    hover:text-white
+                          hover:text-white
 
-                    transition
-                  "
-                >
+                          transition
+                        "
+                      >
 
-                  <Package
-                    size={18}
-                  />
+                        <Package
+                          size={18}
+                        />
 
-                  <span>
-                    Orders
-                  </span>
+                        Orders
 
-                </Link>
+                      </Link>
+
+                    </>
+                  )
+                }
 
 
                 {/* LOGOUT */}
@@ -362,7 +379,291 @@ export default function Navbar() {
 
         </div>
 
+
+        {/* MOBILE MENU BUTTON */}
+        <button
+
+          onClick={() =>
+            setMobileMenu(
+              !mobileMenu
+            )
+          }
+
+          className="
+
+            md:hidden
+
+            text-white
+          "
+        >
+
+          {
+            mobileMenu
+              ? <X size={28} />
+              : <Menu size={28} />
+          }
+
+        </button>
+
       </div>
+
+
+      {/* MOBILE MENU */}
+      {
+        mobileMenu && (
+
+          <div
+
+            className="
+
+              md:hidden
+
+              px-4
+
+              pb-5
+
+              flex
+
+              flex-col
+
+              gap-4
+
+              bg-black/95
+
+              border-t
+
+              border-white/10
+            "
+          >
+
+            {/* NOT LOGGED */}
+            {
+              !isAuthenticated && (
+
+                <>
+
+                  <Link
+
+                    to="/login"
+
+                    onClick={() =>
+                      setMobileMenu(false)
+                    }
+
+                    className="text-gray-300"
+                  >
+                    Login
+                  </Link>
+
+                  <Link
+
+                    to="/register"
+
+                    onClick={() =>
+                      setMobileMenu(false)
+                    }
+
+                    className="
+
+                      bg-white
+
+                      text-black
+
+                      px-4
+
+                      py-2
+
+                      rounded-xl
+
+                      text-center
+
+                      font-semibold
+                    "
+                  >
+                    Register
+                  </Link>
+
+                </>
+              )
+            }
+
+
+            {/* LOGGED */}
+            {
+              isAuthenticated && (
+
+                <>
+
+                  <div
+
+                    className="
+
+                      flex
+
+                      items-center
+
+                      gap-2
+
+                      text-gray-300
+                    "
+                  >
+
+                    <User size={18} />
+
+                    {user?.username}
+
+                  </div>
+
+
+                  {/* VENDOR */}
+                  {
+                    user?.is_vendor && (
+
+                      <Link
+
+                        to="/vendor"
+
+                        onClick={() =>
+                          setMobileMenu(false)
+                        }
+
+                        className="
+
+                          flex
+
+                          items-center
+
+                          gap-2
+
+                          text-gray-300
+                        "
+                      >
+
+                        <LayoutDashboard
+                          size={18}
+                        />
+
+                        Vendor Dashboard
+
+                      </Link>
+                    )
+                  }
+
+
+                  {/* NORMAL USER ONLY */}
+                  {
+                    !user?.is_vendor && (
+
+                      <>
+
+                        <Link
+
+                          to="/cart"
+
+                          onClick={() =>
+                            setMobileMenu(false)
+                          }
+
+                          className="
+
+                            flex
+
+                            items-center
+
+                            gap-2
+
+                            text-gray-300
+                          "
+                        >
+
+                          <ShoppingCart
+                            size={18}
+                          />
+
+                          Cart
+
+                        </Link>
+
+
+                        <Link
+
+                          to="/orders"
+
+                          onClick={() =>
+                            setMobileMenu(false)
+                          }
+
+                          className="
+
+                            flex
+
+                            items-center
+
+                            gap-2
+
+                            text-gray-300
+                          "
+                        >
+
+                          <Package
+                            size={18}
+                          />
+
+                          Orders
+
+                        </Link>
+
+                      </>
+                    )
+                  }
+
+
+                  {/* LOGOUT */}
+                  <button
+
+                    onClick={handleLogout}
+
+                    className="
+
+                      flex
+
+                      items-center
+
+                      justify-center
+
+                      gap-2
+
+                      bg-red-500
+
+                      hover:bg-red-600
+
+                      text-white
+
+                      px-4
+
+                      py-3
+
+                      rounded-xl
+
+                      transition
+                    "
+                  >
+
+                    <LogOut
+                      size={18}
+                    />
+
+                    Logout
+
+                  </button>
+
+                </>
+              )
+            }
+
+          </div>
+        )
+      }
 
     </nav>
   );
